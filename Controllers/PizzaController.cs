@@ -76,7 +76,6 @@ namespace TPModule5_2.Controllers
         // GET: Pizza/Edit/5
         public ActionResult Edit(int id)
         {
-
             Pizza pizza = pizzas.FirstOrDefault(p => p.Id == id);
             if (pizza != null)
             {
@@ -84,6 +83,16 @@ namespace TPModule5_2.Controllers
                 pizzaVM.setIngredients(listIngredients);
                 pizzaVM.setPates(listPates);
                 pizzaVM.Pizza = pizza;
+                if(pizzaVM.Pizza.Pate != null)
+                {
+                    pizzaVM.selectedPate = pizzaVM.Pizza.Pate.Id;
+                }
+
+                if (pizzaVM.Pizza.Ingredients.Any())
+                {
+                    pizzaVM.selectedIngredients = pizzaVM.Pizza.Ingredients.Select(i => i.Id).ToList();
+                }
+
                 return View(pizzaVM);
             }
             return RedirectToAction("Index");
