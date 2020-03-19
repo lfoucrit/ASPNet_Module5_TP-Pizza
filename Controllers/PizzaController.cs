@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TPModule5_2.Models;
 using TPModule5_2.Utils;
 using TPModule5_2_Bo;
 
@@ -10,6 +11,8 @@ namespace TPModule5_2.Controllers
 {
     public class PizzaController : Controller
     {
+        private static List<Ingredient> listIngredients = Pizza.IngredientsDisponibles;
+        private static List<Pate> listPates = Pizza.PatesDisponibles;
 
         private static List<Pizza> pizzas;
 
@@ -41,19 +44,25 @@ namespace TPModule5_2.Controllers
         // GET: Pizza/Create
         public ActionResult Create()
         {
-            List<Ingredient> ingredients = Pizza.IngredientsDisponibles;
-            List<Pate> pates = Pizza.PatesDisponibles;
-
-            return View();
+            PizzaVm pizzaVM = new PizzaVm();
+            pizzaVM.setIngredients(listIngredients);
+            pizzaVM.setPates(listPates);
+            return View(pizzaVM);
         }
 
         // POST: Pizza/Create
         [HttpPost]
-        public ActionResult Create(Pizza nouvellePizza)
+        public ActionResult Create(PizzaVm pizzaVM)
         {
             try
             {
+                Pizza nouvellePizza = pizzaVM.Pizza;
                 int maxId = pizzas.Max(p => p.Id);
+                nouvellePizza.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVM.selectedPate);
+                foreach (var ingredient in pizzaVM.selectedIngredients)
+                {
+                    nouvellePizza.Ingredients.Add(listIngredients.FirstOrDefault(i => i.Id == ingredient));
+                }
                 nouvellePizza.Id = maxId +1;
                 pizzas.Add(nouvellePizza);
                 return RedirectToAction("Index");
@@ -67,24 +76,32 @@ namespace TPModule5_2.Controllers
         // GET: Pizza/Edit/5
         public ActionResult Edit(int id)
         {
+
             Pizza pizza = pizzas.FirstOrDefault(p => p.Id == id);
             if (pizza != null)
             {
-                return View(pizza);
+                var pizzaVM = new PizzaVm();
+                pizzaVM.setIngredients(listIngredients);
+                pizzaVM.setPates(listPates);
+                pizzaVM.Pizza = pizza;
+                return View(pizzaVM);
             }
             return RedirectToAction("Index");
         }
 
         // POST: Pizza/Edit/5
         [HttpPost]
-        public ActionResult Edit(Pizza pizza)
+        public ActionResult Edit(PizzaVm pizzaVm)
         {
             try
             {
-                Pizza pizzaDb = pizzas.FirstOrDefault(p => p.Id == pizza.Id);
-                pizzaDb.Nom = pizza.Nom;
-                pizzaDb.Pate = pizza.Pate;
-                pizzaDb.Ingredients = pizza.Ingredients;
+                Pizza pizzaDb = pizzas.FirstOrDefault(p => p.Id == pizzaVm.Pizza.Id);
+                pizzaDb.Nom = pizzaVm.Pizza.Nom;
+                pizzaDb.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVm.selectedPate);
+                foreach (var ingredient in pizzaVm.selectedIngredients) 
+                {
+                    pizzaDb.Ingredients.Add(listIngredients.FirstOrDefault(i => i.Id == ingredient));
+                }
                 return RedirectToAction("Index");
             }
             catch

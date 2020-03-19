@@ -9,24 +9,35 @@ namespace TPModule5_2.Models
 {
     public class PizzaVm
     {
-        private Pizza pizza;
-
-        public Pizza GetPizza()
+        public PizzaVm()
         {
-            return pizza;
+
+        }
+        public List<Ingredient> ingredients = new List<Ingredient>();
+        public List<Pate> pates = new List<Pate>();
+        public void setIngredients(List<Ingredient> ingredients)
+        {
+            this.ingredients = ingredients;
+        }
+        public void setPates(List<Pate> pates)
+        {
+            this.pates = pates;
         }
 
-        public void SetPizza(Pizza value)
+        public Pizza Pizza { get; set; }
+        
+        public List<int> selectedIngredients { get; set; } = new List<int>();
+
+        public int selectedPate { get; set; }
+
+        public void setPizzaIngredients(List<Ingredient> ingredients)
         {
-            pizza.Nom = value.Nom;
-            pizza.Id = value.Id;
-            //pizza.Pate = IdSelectedPate;
-            //pizza.Ingredients = IdSelectedIngredients;
+            this.Pizza.Ingredients = ingredients;
         }
 
-        public List<SelectListItem> Ingredients { get; set; } = new List<SelectListItem>();
-        public List<SelectListItem> Pates { get; set; } = new List<SelectListItem>();
-        public int IdSelectedPate { get; set; }
-        public List<int> IdSelectedIngredients { get; set; } = new List<int>();
+        public void setPizzaPate(Pate pate)
+        {
+            this.Pizza.Pate = pate;
+        }
     }
 }
