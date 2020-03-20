@@ -56,39 +56,51 @@ namespace TPModule5_2.Controllers
         {
             try
             {
+                
                 if (ModelState.IsValid)
                 {
+                    
                     if (pizzaVM.selectedPate == 0)
                     {
                         throw new Exception("Une pizza doit toujours avoir une pâte.");
-                    } 
+                    }
+                    
                     if(pizzaVM.selectedIngredients.Count() < 2 || pizzaVM.selectedIngredients.Count() > 5)
                     {
-                        throw new Exception("Une pizza doit avoir entr e 2 et 5 ingrédients.");
+                        throw new Exception("Une pizza doit avoir entre 2 et 5 ingrédients.");
                     }
                     Pizza nouvellePizza = pizzaVM.Pizza;
-
+                    
                     if (pizzas.Any(p => p.Nom.ToUpper() == nouvellePizza.Nom.ToUpper() && nouvellePizza.Id != p.Id))
                     {
-                        ModelState.AddModelError("", "Il existe déjà une pizza portant ce nom.");
-                        return View();
+                        throw new Exception("Il existe déjà une pizza portant ce nom.");
                     }
+
                     nouvellePizza.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVM.selectedPate);
                     foreach (var ingredient in pizzaVM.selectedIngredients)
                     {
                         nouvellePizza.Ingredients.Add(listIngredients.FirstOrDefault(i => i.Id == ingredient));
                     }
+
+                    if (pizzas.Where(p => p.Ingredients == nouvellePizza.Ingredients && nouvellePizza.Id != p.Id).Count() > 2)
+                    {
+                        throw new Exception("Il existe deux pizzas avec ces ingrédients.");
+                    }
+
                     int maxId = pizzas.Max(p => p.Id);
                     nouvellePizza.Id = maxId + 1;
                     pizzas.Add(nouvellePizza);
                     return RedirectToAction("Index");
                 }
                 throw new Exception("Formulaire invalide");
+                
             }
             catch(Exception e)
             {
                 ModelState.AddModelError("", e.Message);
-                return View();
+                pizzaVM.setIngredients(listIngredients);
+                pizzaVM.setPates(listPates);
+                return View(pizzaVM);
             }
         }
 
