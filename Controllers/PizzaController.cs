@@ -82,9 +82,26 @@ namespace TPModule5_2.Controllers
                         nouvellePizza.Ingredients.Add(listIngredients.FirstOrDefault(i => i.Id == ingredient));
                     }
 
-                    if (pizzas.Where(p => p.Ingredients == nouvellePizza.Ingredients && nouvellePizza.Id != p.Id).Count() > 2)
+                    foreach (Pizza pizza in pizzas)
                     {
-                        throw new Exception("Il existe deux pizzas avec ces ingrédients.");
+                        if(pizzaVM.selectedIngredients.Count() == nouvellePizza.Ingredients.Count())
+                        {
+                            List<Ingredient> pizzaBd = nouvellePizza.Ingredients.OrderBy(x => x.Id).ToList();
+                            pizzaVM.selectedIngredients = pizzaVM.selectedIngredients.OrderBy(x => x).ToList();
+                            bool isDifferent = false;
+                            for (int i = 0; i < pizzaVM.selectedIngredients.Count(); i++)
+                            {
+                                if(pizzaVM.selectedIngredients.ElementAt(i) != pizzaBd.ElementAt(i).Id)
+                                {
+                                    isDifferent = true;
+                                    break;
+                                } 
+                            }
+                            if (!isDifferent)
+                            {
+                                throw new Exception("Il existe une pizza avec ces ingrédients.");
+                            }
+                        }
                     }
 
                     int maxId = pizzas.Max(p => p.Id);
