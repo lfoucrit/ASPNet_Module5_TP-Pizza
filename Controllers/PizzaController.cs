@@ -56,7 +56,6 @@ namespace TPModule5_2.Controllers
         {
             try
             {
-                
                 if (ModelState.IsValid)
                 {
                     
@@ -160,13 +159,35 @@ namespace TPModule5_2.Controllers
                 {
                     throw new Exception("Une pizza doit avoir entr e 2 et 5 ingrédients.");
                 }
-                Pizza nouvellePizza = pizzaVM.Pizza;
 
-                if (pizzas.Any(p => p.Nom.ToUpper() == nouvellePizza.Nom.ToUpper() && nouvellePizza.Id != p.Id))
+                if (pizzas.Any(p => p.Nom.ToUpper() == pizzaVM.Pizza.Nom.ToUpper() && pizzaVM.Pizza.Id != p.Id))
                 {
                     ModelState.AddModelError("", "Il existe déjà une pizza portant ce nom.");
                     return View();
                 }
+
+                foreach (Pizza pizza in pizzas)
+                {
+                    if (pizzaVM.selectedIngredients.Count() == pizzaVM.Pizza.Ingredients.Count())
+                    {
+                        List<Ingredient> pizzaBd = pizzaVM.Pizza.Ingredients.OrderBy(x => x.Id).ToList();
+                        pizzaVM.selectedIngredients = pizzaVM.selectedIngredients.OrderBy(x => x).ToList();
+                        bool isDifferent = false;
+                        for (int i = 0; i < pizzaVM.selectedIngredients.Count(); i++)
+                        {
+                            if (pizzaVM.selectedIngredients.ElementAt(i) != pizzaBd.ElementAt(i).Id)
+                            {
+                                isDifferent = true;
+                                break;
+                            }
+                        }
+                        if (!isDifferent)
+                        {
+                            throw new Exception("Il existe une pizza avec ces ingrédients.");
+                        }
+                    }
+                }
+
                 Pizza pizzaDb = pizzas.FirstOrDefault(p => p.Id == pizzaVM.Pizza.Id);
                 pizzaDb.Nom = pizzaVM.Pizza.Nom;
                 pizzaDb.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVM.selectedPate);
@@ -179,7 +200,19 @@ namespace TPModule5_2.Controllers
             catch (Exception e)
             {
                 ModelState.AddModelError("", e.Message);
-                return View();
+                pizzaVM.setIngredients(listIngredients);
+                pizzaVM.setPates(listPates);
+                if (pizzaVM.Pizza.Pate != null)
+                {
+                    pizzaVM.selectedPate = pizzaVM.Pizza.Pate.Id;
+                }
+
+                if (pizzaVM.Pizza.Ingredients.Any())
+                {
+                    pizzaVM.selectedIngredients = pizzaVM.Pizza.Ingredients.Select(i => i.Id).ToList();
+                }
+
+                return View(pizzaVM);
             }
         }
 
