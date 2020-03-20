@@ -1,3 +1,4 @@
+C:\Users\Utilisateur\source\repos\TPModule5-2\obj\Debug\TPModule5-2.csprojAssemblyReference.cache
 C:\Users\Utilisateur\source\repos\TPModule5-2\bin\TPModule5-2.dll.config
 C:\Users\Utilisateur\source\repos\TPModule5-2\bin\TPModule5-2.dll
 C:\Users\Utilisateur\source\repos\TPModule5-2\bin\TPModule5-2.pdb
@@ -81,7 +82,6 @@ C:\Users\Utilisateur\source\repos\TPModule5-2\bin\fr\System.Web.Razor.resources.
 C:\Users\Utilisateur\source\repos\TPModule5-2\bin\fr\System.Web.WebPages.resources.dll
 C:\Users\Utilisateur\source\repos\TPModule5-2\bin\fr\System.Web.WebPages.Deployment.resources.dll
 C:\Users\Utilisateur\source\repos\TPModule5-2\bin\fr\System.Web.WebPages.Razor.resources.dll
-C:\Users\Utilisateur\source\repos\TPModule5-2\obj\Debug\TPModule5-2.csprojAssemblyReference.cache
 C:\Users\Utilisateur\source\repos\TPModule5-2\obj\Debug\TPModule5-2.csproj.CopyComplete
 C:\Users\Utilisateur\source\repos\TPModule5-2\obj\Debug\TPModule5-2.dll
 C:\Users\Utilisateur\source\repos\TPModule5-2\obj\Debug\TPModule5-2.pdb

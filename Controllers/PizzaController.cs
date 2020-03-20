@@ -56,19 +56,38 @@ namespace TPModule5_2.Controllers
         {
             try
             {
-                Pizza nouvellePizza = pizzaVM.Pizza;
-                int maxId = pizzas.Max(p => p.Id);
-                nouvellePizza.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVM.selectedPate);
-                foreach (var ingredient in pizzaVM.selectedIngredients)
+                if (ModelState.IsValid)
                 {
-                    nouvellePizza.Ingredients.Add(listIngredients.FirstOrDefault(i => i.Id == ingredient));
+                    if (pizzaVM.selectedPate == 0)
+                    {
+                        throw new Exception("Une pizza doit toujours avoir une pâte.");
+                    } 
+                    if(pizzaVM.selectedIngredients.Count() < 2 || pizzaVM.selectedIngredients.Count() > 5)
+                    {
+                        throw new Exception("Une pizza doit avoir entr e 2 et 5 ingrédients.");
+                    }
+                    Pizza nouvellePizza = pizzaVM.Pizza;
+
+                    if (pizzas.Any(p => p.Nom.ToUpper() == nouvellePizza.Nom.ToUpper() && nouvellePizza.Id != p.Id))
+                    {
+                        ModelState.AddModelError("", "Il existe déjà une pizza portant ce nom.");
+                        return View();
+                    }
+                    nouvellePizza.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVM.selectedPate);
+                    foreach (var ingredient in pizzaVM.selectedIngredients)
+                    {
+                        nouvellePizza.Ingredients.Add(listIngredients.FirstOrDefault(i => i.Id == ingredient));
+                    }
+                    int maxId = pizzas.Max(p => p.Id);
+                    nouvellePizza.Id = maxId + 1;
+                    pizzas.Add(nouvellePizza);
+                    return RedirectToAction("Index");
                 }
-                nouvellePizza.Id = maxId +1;
-                pizzas.Add(nouvellePizza);
-                return RedirectToAction("Index");
+                throw new Exception("Formulaire invalide");
             }
-            catch
+            catch(Exception e)
             {
+                ModelState.AddModelError("", e.Message);
                 return View();
             }
         }
@@ -100,21 +119,37 @@ namespace TPModule5_2.Controllers
 
         // POST: Pizza/Edit/5
         [HttpPost]
-        public ActionResult Edit(PizzaVm pizzaVm)
+        public ActionResult Edit(PizzaVm pizzaVM)
         {
             try
             {
-                Pizza pizzaDb = pizzas.FirstOrDefault(p => p.Id == pizzaVm.Pizza.Id);
-                pizzaDb.Nom = pizzaVm.Pizza.Nom;
-                pizzaDb.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVm.selectedPate);
-                foreach (var ingredient in pizzaVm.selectedIngredients) 
+                if (pizzaVM.selectedPate == 0)
+                {
+                    throw new Exception("Une pizza doit toujours avoir une pâte.");
+                }
+                if (pizzaVM.selectedIngredients.Count() < 2 || pizzaVM.selectedIngredients.Count() > 5)
+                {
+                    throw new Exception("Une pizza doit avoir entr e 2 et 5 ingrédients.");
+                }
+                Pizza nouvellePizza = pizzaVM.Pizza;
+
+                if (pizzas.Any(p => p.Nom.ToUpper() == nouvellePizza.Nom.ToUpper() && nouvellePizza.Id != p.Id))
+                {
+                    ModelState.AddModelError("", "Il existe déjà une pizza portant ce nom.");
+                    return View();
+                }
+                Pizza pizzaDb = pizzas.FirstOrDefault(p => p.Id == pizzaVM.Pizza.Id);
+                pizzaDb.Nom = pizzaVM.Pizza.Nom;
+                pizzaDb.Pate = listPates.FirstOrDefault(p => p.Id == pizzaVM.selectedPate);
+                foreach (var ingredient in pizzaVM.selectedIngredients) 
                 {
                     pizzaDb.Ingredients.Add(listIngredients.FirstOrDefault(i => i.Id == ingredient));
                 }
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception e)
             {
+                ModelState.AddModelError("", e.Message);
                 return View();
             }
         }
